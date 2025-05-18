@@ -4,19 +4,26 @@ $ErrorActionPreference = "Stop"
 
 function Show-Menu {
     Clear-Host
-    Start-Sleep -Milliseconds 200
+    Start-Sleep -Milliseconds 100
+
+    $menu = @"
+╔════════════════════════════════════════════╗
+║          OfficeOneClick 安装工具          ║
+╠════════════════════════════════════════════╣
+║  1. 一键安装 Office                        ║
+║  2. 下载 Office 安装工具                   ║
+║  3. 下载 Office 安装包                     ║
+║  4. 执行 Office 安装                       ║
+║  5. 激活 Office                            ║
+║  6. 卸载脚本及缓存文件                     ║
+║  0. 退出                                   ║
+╚════════════════════════════════════════════╝
+"@
+
     Write-Host ""
-    Write-Host "========== OfficeOneClick 安装工具 ==========" -ForegroundColor Cyan
-    Write-Host "1. 一键安装 Office"
-    Write-Host "2. 下载 Office 安装工具"
-    Write-Host "3. 下载 Office 安装包"
-    Write-Host "4. 执行 Office 安装"
-    Write-Host "5. 激活 Office"
-    Write-Host "6. 卸载脚本及缓存文件"
-    Write-Host "0. 退出"
-    Write-Host "==============================================" -ForegroundColor Cyan
-    Write-Host ""
+    $menu | Out-Host
 }
+
 
 function Download-SetupTool {
     try {
