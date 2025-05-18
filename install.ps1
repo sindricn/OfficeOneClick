@@ -389,7 +389,7 @@ $exitButton.Add_Click({
 # 显示欢迎信息
 $logBox.AppendText("欢迎使用 Office 一键安装工具！\n")
 $logBox.AppendText("请选择上方的操作按钮开始安装。\n")
-$logBox.AppendText("推荐使用"一键完成安装"以自动执行所有步骤。\n")
+$logBox.AppendText("推荐使用【一键完成安装】以自动执行所有步骤。\n")
 
 # 显示窗口
 $form.ShowDialog()
