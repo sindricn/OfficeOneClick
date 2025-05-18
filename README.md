@@ -1,8 +1,6 @@
 # OfficeOneClick
 
-一键下载、安装并激活 Microsoft Office 的自动化脚本工具。
-
-> 🚀 自动化办公环境搭建，从下载到激活一步到位。
+🎯 一键下载、安装并激活 Microsoft Office！支持自定义安装、KMS 激活，适用于 Windows 用户的高效办公利器。
 
 ---
 
