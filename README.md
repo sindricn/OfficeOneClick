@@ -40,6 +40,7 @@ Office-OneClick GUI 是一个基于 PowerShell 的图形化安装工具，帮助
 
 ```powershell
 irm https://raw.githubusercontent.com/sindricn/OfficeOneClick/main/install.ps1 | iex
+```
 
 ---
 ## ⚠️ 免责声明
