@@ -43,6 +43,7 @@ function DownloadFiles {
         Invoke-WebRequest -Uri $configUrl -OutFile $configPath
         $logBox.SelectionColor = [System.Drawing.Color]::Green
         $logBox.AppendText("安装文件下载成功。\n")
+        $logBox.AppendText("文件已保存至: $workDir\n")
         $logBox.ScrollToCaret()
         return $true
     } catch {
@@ -70,22 +71,30 @@ function DownloadOffice {
     $logBox.ScrollToCaret()
     
     try {
+        # 确保当前目录是工作目录，以便所有下载的文件都保存在此
+        $originalLocation = Get-Location
+        Set-Location $workDir
+        
         $process = Start-Process -FilePath $setupPath -ArgumentList "/download", $configPath -PassThru -Wait
         if ($process.ExitCode -ne 0) {
             $logBox.SelectionColor = [System.Drawing.Color]::Red
             $logBox.AppendText("Office 安装包下载失败！错误代码: $($process.ExitCode)\n")
             $logBox.ScrollToCaret()
+            Set-Location $originalLocation
             return $false
         }
         
+        Set-Location $originalLocation
         $logBox.SelectionColor = [System.Drawing.Color]::Green
         $logBox.AppendText("Office 安装包下载成功。\n")
+        $logBox.AppendText("所有文件已保存至: $workDir\n")
         $logBox.ScrollToCaret()
         return $true
     } catch {
         $logBox.SelectionColor = [System.Drawing.Color]::Red
         $logBox.AppendText("下载 Office 安装包时出错: $_\n")
         $logBox.ScrollToCaret()
+        Set-Location $originalLocation
         return $false
     }
 }
@@ -107,14 +116,20 @@ function InstallOffice {
     $logBox.ScrollToCaret()
     
     try {
+        # 确保当前目录是工作目录
+        $originalLocation = Get-Location
+        Set-Location $workDir
+        
         $process = Start-Process -FilePath $setupPath -ArgumentList "/configure", $configPath -PassThru -Wait
         if ($process.ExitCode -ne 0) {
             $logBox.SelectionColor = [System.Drawing.Color]::Red
             $logBox.AppendText("Office 安装失败！错误代码: $($process.ExitCode)\n")
             $logBox.ScrollToCaret()
+            Set-Location $originalLocation
             return $false
         }
         
+        Set-Location $originalLocation
         $logBox.SelectionColor = [System.Drawing.Color]::Green
         $logBox.AppendText("Office 安装成功。\n")
         $logBox.ScrollToCaret()
@@ -123,6 +138,7 @@ function InstallOffice {
         $logBox.SelectionColor = [System.Drawing.Color]::Red
         $logBox.AppendText("安装 Office 时出错: $_\n")
         $logBox.ScrollToCaret()
+        Set-Location $originalLocation
         return $false
     }
 }
@@ -179,6 +195,101 @@ function ActivateOffice {
     }
 }
 
+# 打开临时文件夹
+function OpenWorkDirectory {
+    param (
+        [System.Windows.Forms.RichTextBox]$logBox
+    )
+    
+    if (!(Test-Path $workDir)) {
+        New-Item -Path $workDir -ItemType Directory -Force | Out-Null
+    }
+    
+    $logBox.AppendText("正在打开临时文件夹...\n")
+    
+    try {
+        Start-Process -FilePath "explorer.exe" -ArgumentList $workDir
+        $logBox.SelectionColor = [System.Drawing.Color]::Green
+        $logBox.AppendText("已打开临时文件夹: $workDir\n")
+        $logBox.ScrollToCaret()
+        return $true
+    } catch {
+        $logBox.SelectionColor = [System.Drawing.Color]::Red
+        $logBox.AppendText("打开临时文件夹失败: $_\n")
+        $logBox.ScrollToCaret()
+        return $false
+    }
+}
+
+# 检查临时文件夹内容
+function CheckWorkDirectory {
+    param (
+        [System.Windows.Forms.RichTextBox]$logBox
+    )
+    
+    $logBox.AppendText("正在检查临时文件夹内容...\n")
+    $logBox.ScrollToCaret()
+    
+    if (!(Test-Path $workDir)) {
+        $logBox.SelectionColor = [System.Drawing.Color]::Red
+        $logBox.AppendText("临时文件夹不存在。\n")
+        $logBox.ScrollToCaret()
+        return
+    }
+    
+    try {
+        $files = Get-ChildItem -Path $workDir -Recurse
+        
+        if ($files.Count -eq 0) {
+            $logBox.AppendText("临时文件夹是空的。\n")
+            $logBox.ScrollToCaret()
+            return
+        }
+        
+        $logBox.AppendText("临时文件夹包含以下文件：\n")
+        $totalSize = 0
+        
+        foreach ($file in $files) {
+            if (!$file.PSIsContainer) {
+                $size = $file.Length
+                $totalSize += $size
+                $sizeStr = ""
+                
+                if ($size -lt 1KB) {
+                    $sizeStr = "$size B"
+                } elseif ($size -lt 1MB) {
+                    $sizeStr = "{0:N2} KB" -f ($size / 1KB)
+                } elseif ($size -lt 1GB) {
+                    $sizeStr = "{0:N2} MB" -f ($size / 1MB)
+                } else {
+                    $sizeStr = "{0:N2} GB" -f ($size / 1GB)
+                }
+                
+                $relativePath = $file.FullName.Substring($workDir.Length + 1)
+                $logBox.AppendText("- $relativePath ($sizeStr)`n")
+            }
+        }
+        
+        $totalSizeStr = ""
+        if ($totalSize -lt 1KB) {
+            $totalSizeStr = "$totalSize B"
+        } elseif ($totalSize -lt 1MB) {
+            $totalSizeStr = "{0:N2} KB" -f ($totalSize / 1KB)
+        } elseif ($totalSize -lt 1GB) {
+            $totalSizeStr = "{0:N2} MB" -f ($totalSize / 1MB)
+        } else {
+            $totalSizeStr = "{0:N2} GB" -f ($totalSize / 1GB)
+        }
+        
+        $logBox.AppendText("`n总计: $($files.Count) 个文件，占用空间 $totalSizeStr\n")
+        $logBox.ScrollToCaret()
+    } catch {
+        $logBox.SelectionColor = [System.Drawing.Color]::Red
+        $logBox.AppendText("检查临时文件夹内容时出错: $_\n")
+        $logBox.ScrollToCaret()
+    }
+}
+
 # 完整安装流程
 function CompleteInstallation {
     param (
@@ -221,13 +332,10 @@ function CompleteInstallation {
         return
     }
     
-    # 清理
-    $logBox.AppendText("正在清理临时文件...\n")
-    $logBox.ScrollToCaret()
-    Remove-Item -Path $workDir -Recurse -Force -ErrorAction SilentlyContinue
-    
+    # 不自动清理，方便用户查看文件
     $logBox.SelectionColor = [System.Drawing.Color]::Green
     $logBox.AppendText("`nOffice 安装和激活已成功完成！您现在可以使用 Microsoft Office 产品了。\n")
+    $logBox.AppendText("临时安装文件保留在: $workDir，可以通过「查看临时文件夹」按钮查看。\n")
     $logBox.ScrollToCaret()
 }
 
@@ -304,25 +412,54 @@ $activateButton.Location = New-Object System.Drawing.Point(190, 70)
 $activateButton.Size = New-Object System.Drawing.Size(150, 30)
 $groupBox.Controls.Add($activateButton)
 
+# 创建临时文件夹操作按钮
+$openWorkDirButton = New-Object System.Windows.Forms.Button
+$openWorkDirButton.Text = "查看临时文件夹"
+$openWorkDirButton.Location = New-Object System.Drawing.Point(360, 30)
+$openWorkDirButton.Size = New-Object System.Drawing.Size(150, 30)
+$groupBox.Controls.Add($openWorkDirButton)
+
 # 创建清理按钮
 $cleanupButton = New-Object System.Windows.Forms.Button
 $cleanupButton.Text = "5. 清理临时文件"
-$cleanupButton.Location = New-Object System.Drawing.Point(360, 30)
+$cleanupButton.Location = New-Object System.Drawing.Point(360, 70)
 $cleanupButton.Size = New-Object System.Drawing.Size(150, 30)
 $groupBox.Controls.Add($cleanupButton)
+
+# 创建文件管理组
+$fileGroupBox = New-Object System.Windows.Forms.GroupBox
+$fileGroupBox.Text = "临时文件管理"
+$fileGroupBox.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 9)
+$fileGroupBox.Location = New-Object System.Drawing.Point(20, 310)
+$fileGroupBox.Size = New-Object System.Drawing.Size(550, 50)
+$form.Controls.Add($fileGroupBox)
+
+# 创建查看文件列表按钮
+$listFilesButton = New-Object System.Windows.Forms.Button
+$listFilesButton.Text = "列出临时文件"
+$listFilesButton.Location = New-Object System.Drawing.Point(20, 20)
+$listFilesButton.Size = New-Object System.Drawing.Size(150, 25)
+$fileGroupBox.Controls.Add($listFilesButton)
+
+# 创建临时文件夹路径按钮
+$showPathButton = New-Object System.Windows.Forms.Button
+$showPathButton.Text = "显示临时文件夹路径"
+$showPathButton.Location = New-Object System.Drawing.Point(190, 20)
+$showPathButton.Size = New-Object System.Drawing.Size(150, 25)
+$fileGroupBox.Controls.Add($showPathButton)
 
 # 创建退出按钮
 $exitButton = New-Object System.Windows.Forms.Button
 $exitButton.Text = "退出程序"
-$exitButton.Location = New-Object System.Drawing.Point(360, 70)
-$exitButton.Size = New-Object System.Drawing.Size(150, 30)
+$exitButton.Location = New-Object System.Drawing.Point(360, 20)
+$exitButton.Size = New-Object System.Drawing.Size(150, 25)
 $exitButton.BackColor = [System.Drawing.Color]::LightGray
-$groupBox.Controls.Add($exitButton)
+$fileGroupBox.Controls.Add($exitButton)
 
 # 创建日志框
 $logBox = New-Object System.Windows.Forms.RichTextBox
-$logBox.Location = New-Object System.Drawing.Point(20, 320)
-$logBox.Size = New-Object System.Drawing.Size(550, 120)
+$logBox.Location = New-Object System.Drawing.Point(20, 370)
+$logBox.Size = New-Object System.Drawing.Size(550, 70)
 $logBox.Font = New-Object System.Drawing.Font("Consolas", 9)
 $logBox.BackColor = [System.Drawing.Color]::Black
 $logBox.ForeColor = [System.Drawing.Color]::White
@@ -372,13 +509,35 @@ $activateButton.Add_Click({
     ActivateOffice -logBox $logBox
 })
 
+# 打开临时文件夹
+$openWorkDirButton.Add_Click({
+    $logBox.Clear()
+    OpenWorkDirectory -logBox $logBox
+})
+
+# 显示临时文件夹路径
+$showPathButton.Add_Click({
+    $logBox.Clear()
+    $logBox.AppendText("临时文件夹路径: $workDir\n")
+    
+    # 将路径复制到剪贴板
+    [System.Windows.Forms.Clipboard]::SetText($workDir)
+    $logBox.AppendText("已将路径复制到剪贴板。\n")
+})
+
+# 列出临时文件
+$listFilesButton.Add_Click({
+    $logBox.Clear()
+    CheckWorkDirectory -logBox $logBox
+})
+
 # 清理临时文件
 $cleanupButton.Add_Click({
     $logBox.Clear()
     $logBox.AppendText("正在清理临时文件...\n")
-    Remove-Item -Path $workDir -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path $workDir\* -Recurse -Force -ErrorAction SilentlyContinue
     $logBox.SelectionColor = [System.Drawing.Color]::Green
-    $logBox.AppendText("清理完成。\n")
+    $logBox.AppendText("清理完成。文件夹结构保留，但内容已删除。\n")
 })
 
 # 退出程序
@@ -390,6 +549,7 @@ $exitButton.Add_Click({
 $logBox.AppendText("欢迎使用 Office 一键安装工具！\n")
 $logBox.AppendText("请选择上方的操作按钮开始安装。\n")
 $logBox.AppendText("推荐使用【一键完成安装】以自动执行所有步骤。\n")
+$logBox.AppendText("临时文件将保存在: $workDir\n")
 
 # 显示窗口
 $form.ShowDialog()
