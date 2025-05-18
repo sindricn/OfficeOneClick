@@ -1,4 +1,4 @@
-# 🎯 Office-OneClick GUI
+# 🎯 OfficeOneClick
 
 Microsoft Office 一键安装和激活工具，提供简单易用的图形界面。
 
@@ -6,7 +6,7 @@ Microsoft Office 一键安装和激活工具，提供简单易用的图形界面
 
 ## ✨ 简介
 
-Office-OneClick GUI 是一个基于 PowerShell 的图形化安装工具，帮助 Windows 用户一键完成 Microsoft Office 的下载、安装与激活流程。无需手动操作安装包，适合新手和希望高效部署 Office 的用户使用。
+OfficeOneClick 是一个基于 PowerShell 的图形化安装工具，帮助 Windows 用户一键完成 Microsoft Office 的下载、安装与激活流程。无需手动操作安装包，适合新手和希望高效部署 Office 的用户使用。
 
 - 🧰 支持完整自动流程或手动分步执行
 
