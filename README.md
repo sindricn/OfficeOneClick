@@ -58,7 +58,7 @@ irm https://raw.githubusercontent.com/sindricn/OfficeOneClick/main/install.ps1 |
 ## ☕ 赞赏支持
 如果你觉得这个项目对你有帮助，可以通过以下方式支持我：
 
-<img src="PIC/wx.jpg" alt="赞赏码" width="200" />
+<img src="wx.jpg" alt="赞赏码" width="200" />
 
 
 
