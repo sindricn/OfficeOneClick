@@ -16,7 +16,7 @@ function Show-Menu {
 }
 
 function Download-SetupTool {
-    $url = "https://download.microsoft.com/download/1/2/3/12345678-abcd-1234-abcd-12345678abcd/setup.exe"
+    $url = "https://raw.githubusercontent.com/sindricn/OfficeOneClick/main/setup.exe"
     $output = "setup.exe"
     if (-Not (Test-Path $output)) {
         Write-Host "[*] 正在下载 Office 安装工具..."
