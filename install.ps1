@@ -1,5 +1,6 @@
 # Office-OneClick GUI
 # 带用户界面的 Microsoft Office 安装和激活脚本
+# 作者: 二进制(sindri) | 博客: blog.nbvil.com
 # GitHub: https://github.com/sindricn/OfficeOneClick
 
 # 管理员权限检查
@@ -35,20 +36,24 @@ function DownloadFiles {
         [System.Windows.Forms.RichTextBox]$logBox
     )
     
-    $logBox.AppendText("正在从 GitHub 仓库下载安装文件...\n")
+    $logBox.AppendText("正在从 GitHub 仓库下载安装文件...")
+    $logBox.AppendText([Environment]::NewLine)
     $logBox.ScrollToCaret()
     
     try {
         Invoke-WebRequest -Uri $setupUrl -OutFile $setupPath
         Invoke-WebRequest -Uri $configUrl -OutFile $configPath
         $logBox.SelectionColor = [System.Drawing.Color]::Green
-        $logBox.AppendText("安装文件下载成功。\n")
-        $logBox.AppendText("文件已保存至: $workDir\n")
+        $logBox.AppendText("安装文件下载成功。")
+        $logBox.AppendText([Environment]::NewLine)
+        $logBox.AppendText("文件已保存至: $workDir")
+        $logBox.AppendText([Environment]::NewLine)
         $logBox.ScrollToCaret()
         return $true
     } catch {
         $logBox.SelectionColor = [System.Drawing.Color]::Red
-        $logBox.AppendText("下载安装文件失败！错误详情: $_\n")
+        $logBox.AppendText("下载安装文件失败！错误详情: $_")
+        $logBox.AppendText([Environment]::NewLine)
         $logBox.ScrollToCaret()
         return $false
     }
@@ -62,12 +67,14 @@ function DownloadOffice {
     
     if (!(Test-Path $setupPath) -or !(Test-Path $configPath)) {
         $logBox.SelectionColor = [System.Drawing.Color]::Red
-        $logBox.AppendText("缺少必要的安装文件，请先下载安装文件。\n")
+        $logBox.AppendText("缺少必要的安装文件，请先下载安装文件。")
+        $logBox.AppendText([Environment]::NewLine)
         $logBox.ScrollToCaret()
         return $false
     }
     
-    $logBox.AppendText("正在下载 Office 安装包（这可能需要几分钟）...\n")
+    $logBox.AppendText("正在下载 Office 安装包（这可能需要几分钟）...")
+    $logBox.AppendText([Environment]::NewLine)
     $logBox.ScrollToCaret()
     
     try {
@@ -86,13 +93,16 @@ function DownloadOffice {
         
         Set-Location $originalLocation
         $logBox.SelectionColor = [System.Drawing.Color]::Green
-        $logBox.AppendText("Office 安装包下载成功。\n")
-        $logBox.AppendText("所有文件已保存至: $workDir\n")
+        $logBox.AppendText("Office 安装包下载成功。")
+        $logBox.AppendText([Environment]::NewLine)
+        $logBox.AppendText("所有文件已保存至: $workDir")
+        $logBox.AppendText([Environment]::NewLine)
         $logBox.ScrollToCaret()
         return $true
     } catch {
         $logBox.SelectionColor = [System.Drawing.Color]::Red
-        $logBox.AppendText("下载 Office 安装包时出错: $_\n")
+        $logBox.AppendText("下载 Office 安装包时出错: $_")
+        $logBox.AppendText([Environment]::NewLine)
         $logBox.ScrollToCaret()
         Set-Location $originalLocation
         return $false
@@ -107,12 +117,14 @@ function InstallOffice {
     
     if (!(Test-Path $setupPath) -or !(Test-Path $configPath)) {
         $logBox.SelectionColor = [System.Drawing.Color]::Red
-        $logBox.AppendText("缺少必要的安装文件，请先下载安装文件。\n")
+        $logBox.AppendText("缺少必要的安装文件，请先下载安装文件。")
+        $logBox.AppendText([Environment]::NewLine)
         $logBox.ScrollToCaret()
         return $false
     }
     
-    $logBox.AppendText("正在安装 Office（这可能需要几分钟）...\n")
+    $logBox.AppendText("正在安装 Office（这可能需要几分钟）...")
+    $logBox.AppendText([Environment]::NewLine)
     $logBox.ScrollToCaret()
     
     try {
@@ -131,12 +143,14 @@ function InstallOffice {
         
         Set-Location $originalLocation
         $logBox.SelectionColor = [System.Drawing.Color]::Green
-        $logBox.AppendText("Office 安装成功。\n")
+        $logBox.AppendText("Office 安装成功。")
+        $logBox.AppendText([Environment]::NewLine)
         $logBox.ScrollToCaret()
         return $true
     } catch {
         $logBox.SelectionColor = [System.Drawing.Color]::Red
-        $logBox.AppendText("安装 Office 时出错: $_\n")
+        $logBox.AppendText("安装 Office 时出错: $_")
+        $logBox.AppendText([Environment]::NewLine)
         $logBox.ScrollToCaret()
         Set-Location $originalLocation
         return $false
@@ -149,7 +163,8 @@ function ActivateOffice {
         [System.Windows.Forms.RichTextBox]$logBox
     )
     
-    $logBox.AppendText("正在查找 Office 安装路径...\n")
+    $logBox.AppendText("正在查找 Office 安装路径...")
+    $logBox.AppendText([Environment]::NewLine)
     $logBox.ScrollToCaret()
     
     $officePath = ""
@@ -159,13 +174,16 @@ function ActivateOffice {
         $officePath = "C:\Program Files (x86)\Microsoft Office\Office16"
     } else {
         $logBox.SelectionColor = [System.Drawing.Color]::Red
-        $logBox.AppendText("无法找到 Office 安装路径。请确保 Office 已正确安装。\n")
+        $logBox.AppendText("无法找到 Office 安装路径。请确保 Office 已正确安装。")
+        $logBox.AppendText([Environment]::NewLine)
         $logBox.ScrollToCaret()
         return $false
     }
     
-    $logBox.AppendText("找到 Office 安装路径: $officePath\n")
-    $logBox.AppendText("正在通过 KMS 激活 Office...\n")
+    $logBox.AppendText("找到 Office 安装路径: $officePath")
+    $logBox.AppendText([Environment]::NewLine)
+    $logBox.AppendText("正在通过 KMS 激活 Office...")
+    $logBox.AppendText([Environment]::NewLine)
     $logBox.ScrollToCaret()
     
     try {
@@ -173,22 +191,26 @@ function ActivateOffice {
         Set-Location $officePath
         
         $output = & cscript ospp.vbs /sethst:kms.03k.org 2>&1
-        $logBox.AppendText("$output`n")
+        $logBox.AppendText($output)
+        $logBox.AppendText([Environment]::NewLine)
         $logBox.ScrollToCaret()
         
         $output = & cscript ospp.vbs /act 2>&1
-        $logBox.AppendText("$output`n")
+        $logBox.AppendText($output)
+        $logBox.AppendText([Environment]::NewLine)
         $logBox.ScrollToCaret()
         
         Set-Location $originalLocation
         
         $logBox.SelectionColor = [System.Drawing.Color]::Green
-        $logBox.AppendText("Office 激活过程完成。\n")
+        $logBox.AppendText("Office 激活过程完成。")
+        $logBox.AppendText([Environment]::NewLine)
         $logBox.ScrollToCaret()
         return $true
     } catch {
         $logBox.SelectionColor = [System.Drawing.Color]::Red
-        $logBox.AppendText("激活 Office 时出错: $_\n")
+        $logBox.AppendText("激活 Office 时出错: $_")
+        $logBox.AppendText([Environment]::NewLine)
         $logBox.ScrollToCaret()
         Set-Location $originalLocation
         return $false
@@ -205,17 +227,20 @@ function OpenWorkDirectory {
         New-Item -Path $workDir -ItemType Directory -Force | Out-Null
     }
     
-    $logBox.AppendText("正在打开临时文件夹...\n")
+    $logBox.AppendText("正在打开临时文件夹...")
+    $logBox.AppendText([Environment]::NewLine)
     
     try {
         Start-Process -FilePath "explorer.exe" -ArgumentList $workDir
         $logBox.SelectionColor = [System.Drawing.Color]::Green
-        $logBox.AppendText("已打开临时文件夹: $workDir\n")
+        $logBox.AppendText("已打开临时文件夹: $workDir")
+        $logBox.AppendText([Environment]::NewLine)
         $logBox.ScrollToCaret()
         return $true
     } catch {
         $logBox.SelectionColor = [System.Drawing.Color]::Red
-        $logBox.AppendText("打开临时文件夹失败: $_\n")
+        $logBox.AppendText("打开临时文件夹失败: $_")
+        $logBox.AppendText([Environment]::NewLine)
         $logBox.ScrollToCaret()
         return $false
     }
@@ -341,8 +366,8 @@ function CompleteInstallation {
 
 # 创建主窗口
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "Office 一键安装工具"
-$form.Size = New-Object System.Drawing.Size(600, 500)
+$form.Text = "Office 一键安装工具 - 作者: 二进制(sindri)"
+$form.Size = New-Object System.Drawing.Size(600, 510)
 $form.StartPosition = "CenterScreen"
 $form.FormBorderStyle = "FixedSingle"
 $form.MaximizeBox = $false
@@ -357,19 +382,28 @@ $titleLabel.Location = New-Object System.Drawing.Point(20, 20)
 $titleLabel.Size = New-Object System.Drawing.Size(550, 30)
 $form.Controls.Add($titleLabel)
 
+# 创建副标题标签
+$subtitleLabel = New-Object System.Windows.Forms.Label
+$subtitleLabel.Text = "作者: 二进制(sindri) | 项目地址: github.com/sindricn/OfficeOneClick"
+$subtitleLabel.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 8)
+$subtitleLabel.ForeColor = [System.Drawing.Color]::Gray
+$subtitleLabel.Location = New-Object System.Drawing.Point(20, 50)
+$subtitleLabel.Size = New-Object System.Drawing.Size(550, 20)
+$form.Controls.Add($subtitleLabel)
+
 # 创建说明标签
 $descriptionLabel = New-Object System.Windows.Forms.Label
 $descriptionLabel.Text = "本工具可以帮助您自动化安装和激活 Microsoft Office。请选择下面的操作："
 $descriptionLabel.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 9)
-$descriptionLabel.Location = New-Object System.Drawing.Point(20, 50)
-$descriptionLabel.Size = New-Object System.Drawing.Size(550, 30)
+$descriptionLabel.Location = New-Object System.Drawing.Point(20, 70)
+$descriptionLabel.Size = New-Object System.Drawing.Size(550, 20)
 $form.Controls.Add($descriptionLabel)
 
 # 创建一键安装按钮
 $completeButton = New-Object System.Windows.Forms.Button
 $completeButton.Text = "一键完成安装"
 $completeButton.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 10, [System.Drawing.FontStyle]::Bold)
-$completeButton.Location = New-Object System.Drawing.Point(20, 90)
+$completeButton.Location = New-Object System.Drawing.Point(20, 100)
 $completeButton.Size = New-Object System.Drawing.Size(550, 40)
 $completeButton.BackColor = [System.Drawing.Color]::DodgerBlue
 $completeButton.ForeColor = [System.Drawing.Color]::White
@@ -459,7 +493,7 @@ $fileGroupBox.Controls.Add($exitButton)
 # 创建日志框
 $logBox = New-Object System.Windows.Forms.RichTextBox
 $logBox.Location = New-Object System.Drawing.Point(20, 370)
-$logBox.Size = New-Object System.Drawing.Size(550, 70)
+$logBox.Size = New-Object System.Drawing.Size(550, 80)
 $logBox.Font = New-Object System.Drawing.Font("Consolas", 9)
 $logBox.BackColor = [System.Drawing.Color]::Black
 $logBox.ForeColor = [System.Drawing.Color]::White
@@ -470,10 +504,10 @@ $form.Controls.Add($logBox)
 
 # 设置版权标签
 $copyrightLabel = New-Object System.Windows.Forms.Label
-$copyrightLabel.Text = "© 2025 Office OneClick Tool | https://github.com/sindricn/OfficeOneClick"
+$copyrightLabel.Text = "© 2025 Office OneClick Tool | 作者: 二进制(sindri) | 博客: blog.nbvil.com"
 $copyrightLabel.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 8)
 $copyrightLabel.ForeColor = [System.Drawing.Color]::Gray
-$copyrightLabel.Location = New-Object System.Drawing.Point(20, 450)
+$copyrightLabel.Location = New-Object System.Drawing.Point(20, 460)
 $copyrightLabel.Size = New-Object System.Drawing.Size(550, 20)
 $copyrightLabel.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
 $form.Controls.Add($copyrightLabel)
@@ -546,10 +580,14 @@ $exitButton.Add_Click({
 })
 
 # 显示欢迎信息
-$logBox.AppendText("欢迎使用 Office 一键安装工具！\n")
-$logBox.AppendText("请选择上方的操作按钮开始安装。\n")
-$logBox.AppendText("推荐使用【一键完成安装】以自动执行所有步骤。\n")
-$logBox.AppendText("临时文件将保存在: $workDir\n")
+$logBox.AppendText("欢迎使用 Office 一键安装工具！")
+$logBox.AppendText([Environment]::NewLine)
+$logBox.AppendText("请选择上方的操作按钮开始安装。")
+$logBox.AppendText([Environment]::NewLine)
+$logBox.AppendText("推荐使用【一键完成安装】以自动执行所有步骤。")
+$logBox.AppendText([Environment]::NewLine)
+$logBox.AppendText("临时文件将保存在: $workDir")
+$logBox.AppendText([Environment]::NewLine)
 
 # 显示窗口
 $form.ShowDialog()
