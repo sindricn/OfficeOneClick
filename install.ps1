@@ -606,7 +606,7 @@ $copyrightLabel = New-Object System.Windows.Forms.Label
 $copyrightLabel.Text = "© 2025 Office OneClick Tool | 作者: 二进制(sindri) | 博客: blog.nbvil.com"
 $copyrightLabel.Font = New-Object System.Drawing.Font("Microsoft YaHei UI", 8)
 $copyrightLabel.ForeColor = [System.Drawing.Color]::Gray
-$copyrightLabel.Location = New-Object System.Drawing.Point(20, 500)  # 调整位置
+$copyrightLabel.Location = New-Object System.Drawing.Point(20, 440)  # 调整位置
 $copyrightLabel.Size = New-Object System.Drawing.Size(550, 20)
 $copyrightLabel.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
 $form.Controls.Add($copyrightLabel)
