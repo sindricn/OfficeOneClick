@@ -4,148 +4,107 @@ $ErrorActionPreference = "Stop"
 
 function Show-Menu {
     Clear-Host
-    Start-Sleep -Milliseconds 100
-
-    $menu = @"
-╔════════════════════════════════════════════╗
-║          OfficeOneClick 安装工具          ║
-╠════════════════════════════════════════════╣
-║  1. 一键安装 Office                        ║
-║  2. 下载 Office 安装工具                   ║
-║  3. 下载 Office 安装包                     ║
-║  4. 执行 Office 安装                       ║
-║  5. 激活 Office                            ║
-║  6. 卸载脚本及缓存文件                     ║
-║  0. 退出                                   ║
-╚════════════════════════════════════════════╝
-"@
-
-    Write-Host ""
-    $menu | Out-Host
+    $line = "=" * 50
+    Write-Host "`n$line" -ForegroundColor Cyan
+    Write-Host "            OfficeOneClick 安装工具" -ForegroundColor Cyan
+    Write-Host "$line" -ForegroundColor Cyan
+    Write-Host " 1. 一键安装 Office"
+    Write-Host " 2. 下载 Office 安装工具"
+    Write-Host " 3. 下载 Office 安装包"
+    Write-Host " 4. 执行 Office 安装"
+    Write-Host " 5. 激活 Office"
+    Write-Host " 6. 卸载脚本及缓存文件"
+    Write-Host " 0. 退出"
+    Write-Host "$line`n" -ForegroundColor Cyan
 }
 
-
-function Download-SetupTool {
+function Download-File($url, $output) {
     try {
-        $url = "https://raw.githubusercontent.com/sindricn/OfficeOneClick/main/setup.exe"
-        $output = "setup.exe"
         if (-Not (Test-Path $output)) {
-            Write-Host "[*] 正在下载 Office 安装工具..."
-            Invoke-WebRequest -Uri $url -OutFile $output
+            Write-Host "`n[*] 正在下载 $output ..." -ForegroundColor Gray
+            $client = New-Object System.Net.WebClient
+            $client.DownloadFile($url, $output)
             Write-Host "[✓] 下载完成：$output" -ForegroundColor Green
         } else {
-            Write-Host "[!] 安装工具已存在，跳过下载。" -ForegroundColor Yellow
+            Write-Host "[!] $output 已存在，跳过下载。" -ForegroundColor Yellow
         }
-        return $true
     } catch {
-        Write-Host "[×] 安装工具下载失败：$_" -ForegroundColor Red
-        return $false
+        Write-Host "[×] 下载失败：$($_.Exception.Message)" -ForegroundColor Red
+        Exit
     }
 }
 
-function Download-ConfigFile {
-    try {
-        $url = "https://raw.githubusercontent.com/sindricn/OfficeOneClick/main/config.xml"
-        $output = "config.xml"
-        Write-Host "[*] 正在下载配置文件..."
-        Invoke-WebRequest -Uri $url -OutFile $output
-        Write-Host "[✓] 下载完成：$output" -ForegroundColor Green
-        return $true
-    } catch {
-        Write-Host "[×] 配置文件下载失败：$_" -ForegroundColor Red
-        return $false
-    }
+function Download-SetupTool {
+    Download-File "https://raw.githubusercontent.com/sindricn/OfficeOneClick/main/setup.exe" "setup.exe"
+    Download-File "https://raw.githubusercontent.com/sindricn/OfficeOneClick/main/config.xml" "config.xml"
 }
 
 function Download-OfficePackage {
-    try {
-        if (-Not (Test-Path "setup.exe")) {
-            Write-Host "[×] 缺少安装工具 setup.exe" -ForegroundColor Red
-            return $false
-        }
-        if (-Not (Test-Path "config.xml")) {
-            if (-not (Download-ConfigFile)) { return $false }
-        }
+    if (-Not (Test-Path "Office")) { New-Item -ItemType Directory -Path "Office" > $null }
 
-        Write-Host "[*] 正在启动 Office 安装包下载..."
-        $proc = Start-Process -FilePath "setup.exe" -ArgumentList "/download config.xml" -PassThru
-        Wait-Process -Id $proc.Id
-        Start-Sleep -Seconds 2
+    Write-Host "`n[*] 正在下载 Office 安装包（耗时可能较长）..." -ForegroundColor Gray
+    $proc = Start-Process -FilePath "setup.exe" -ArgumentList "/download config.xml" -Wait -PassThru -NoNewWindow
 
-        if (Test-Path "Office\Data") {
-            Write-Host "[✓] 安装包下载成功。" -ForegroundColor Green
-            return $true
-        } else {
-            Write-Host "[×] 未检测到安装包目录，下载失败。" -ForegroundColor Red
-            return $false
-        }
-    } catch {
-        Write-Host "[×] 安装包下载异常：$_" -ForegroundColor Red
-        return $false
+    if ($proc.ExitCode -ne 0 -or -Not (Test-Path "Office\Data")) {
+        Write-Host "[×] 安装包下载失败，可能是网络或配置问题。" -ForegroundColor Red
+        Exit
     }
+
+    Write-Host "[✓] Office 安装包下载完成。" -ForegroundColor Green
 }
 
 function Install-Office {
-    try {
-        if (-Not (Test-Path "setup.exe") -or -Not (Test-Path "config.xml")) {
-            Write-Host "[×] 缺少 setup.exe 或 config.xml，无法安装。" -ForegroundColor Red
-            return $false
-        }
-        Write-Host "[*] 正在安装 Office..."
-        $proc = Start-Process -FilePath "setup.exe" -ArgumentList "/configure config.xml" -PassThru
-        Wait-Process -Id $proc.Id
-        Write-Host "[✓] 安装完成。" -ForegroundColor Green
-        return $true
-    } catch {
-        Write-Host "[×] 安装失败：$_" -ForegroundColor Red
-        return $false
+    Write-Host "`n[*] 正在安装 Office ..." -ForegroundColor Gray
+    $proc = Start-Process -FilePath "setup.exe" -ArgumentList "/configure config.xml" -Wait -PassThru -NoNewWindow
+
+    if ($proc.ExitCode -ne 0) {
+        Write-Host "[×] Office 安装失败。" -ForegroundColor Red
+        Exit
     }
+
+    Write-Host "[✓] 安装完成。" -ForegroundColor Green
 }
 
 function Activate-Office {
-    try {
-        $officePath64 = "C:\Program Files\Microsoft Office\Office16"
-        $officePath32 = "C:\Program Files (x86)\Microsoft Office\Office16"
-        $kmsHost = "kms.03k.org"
+    $officePath64 = "C:\Program Files\Microsoft Office\Office16"
+    $officePath32 = "C:\Program Files (x86)\Microsoft Office\Office16"
+    $kmsHost = "kms.03k.org"
 
-        if (Test-Path $officePath64) {
-            Set-Location $officePath64
-        } elseif (Test-Path $officePath32) {
-            Set-Location $officePath32
-        } else {
-            Write-Host "[×] 未找到 Office 安装路径，激活失败。" -ForegroundColor Red
-            return $false
-        }
-
-        Write-Host "[*] 正在激活 Office..."
-        cscript ospp.vbs /sethst:$kmsHost
-        cscript ospp.vbs /act
-        Write-Host "[✓] 激活完成。" -ForegroundColor Green
-        return $true
-    } catch {
-        Write-Host "[×] 激活失败：$_" -ForegroundColor Red
-        return $false
+    if (Test-Path $officePath64) {
+        Set-Location $officePath64
+    } elseif (Test-Path $officePath32) {
+        Set-Location $officePath32
+    } else {
+        Write-Host "[×] 未找到 Office 安装路径，激活失败。" -ForegroundColor Red
+        Exit
     }
+
+    Write-Host "`n[*] 正在激活 Office ..." -ForegroundColor Gray
+    cscript ospp.vbs /sethst:$kmsHost | Out-Null
+    cscript ospp.vbs /act | Out-Null
+
+    Write-Host "[✓] 激活完成。" -ForegroundColor Green
 }
 
 function Full-Install {
-    if (-not (Download-SetupTool)) { return }
-    if (-not (Download-ConfigFile)) { return }
-    if (-not (Download-OfficePackage)) { return }
-    if (-not (Install-Office)) { return }
-    if (-not (Activate-Office)) { return }
+    Download-SetupTool
+    Download-OfficePackage
+    Install-Office
+    Activate-Office
 }
 
 function Cleanup-Script {
-    Write-Host "[*] 正在清理脚本和缓存文件..."
+    Write-Host "`n[*] 正在清理脚本和缓存文件 ..." -ForegroundColor Gray
     $items = @("setup.exe", "Office", "logs", "install.ps1", "config.xml")
+
     foreach ($item in $items) {
         if (Test-Path $item) {
             Remove-Item $item -Recurse -Force -ErrorAction SilentlyContinue
-            Write-Host "已删除：$item" -ForegroundColor Gray
+            Write-Host "已删除：$item" -ForegroundColor DarkGray
         }
     }
-    Write-Host "[✓] 清理完成，不影响 Office 正常使用。" -ForegroundColor Yellow
+
+    Write-Host "[✓] 清理完成，不影响已安装的 Office 使用。" -ForegroundColor Yellow
     Pause
     Exit
 }
@@ -154,7 +113,7 @@ function Cleanup-Script {
 if (-not ([Security.Principal.WindowsPrincipal] `
     [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`
     [Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Write-Host "[×] 请右键以管理员身份运行此脚本。" -ForegroundColor Red
+    Write-Host "[×] 请以管理员身份运行此脚本。" -ForegroundColor Red
     Pause
     Exit
 }
@@ -165,13 +124,16 @@ do {
     $choice = Read-Host "请输入操作编号"
     switch ($choice) {
         "1" { Full-Install }
-        "2" { Download-SetupTool | Out-Null }
-        "3" { Download-OfficePackage | Out-Null }
-        "4" { Install-Office | Out-Null }
-        "5" { Activate-Office | Out-Null }
+        "2" { Download-SetupTool }
+        "3" { Download-OfficePackage }
+        "4" { Install-Office }
+        "5" { Activate-Office }
         "6" { Cleanup-Script }
         "0" { break }
-        default { Write-Host "[!] 请输入有效编号。" -ForegroundColor Red }
+        default {
+            Write-Host "[!] 无效输入，请输入 0-6 的数字。" -ForegroundColor Red
+        }
     }
+    Write-Host ""  # 空行缓冲
     Pause
 } while ($true)
