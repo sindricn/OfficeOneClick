@@ -49,6 +49,25 @@ Office-OneClick GUI 是一个基于 PowerShell 的图形化安装工具，帮助
 irm https://raw.githubusercontent.com/sindricn/OfficeOneClick/main/install.ps1 | iex
 ```
 
+## 💡 默认安装说明
+
+- Office 版本：Microsoft Office LTSC 专业增强版 2024
+
+- 安装语言：简体中文（zh-CN）
+
+- 默认组件：Word、Excel、PowerPoint
+
+## ⚙️ 自定义 Office 安装版本与内容
+
+如需更换 Office 版本、安装语言或添加/移除组件（如 Access、Publisher 等），可自行修改 config.xml 配置文件。
+
+推荐使用 Microsoft 官方配置工具生成配置文件：
+
+### 🛠 Office 版本自定义工具：
+- 👉 https://config.office.com/deploymentsettings
+
+将生成的配置文件替换项目根目录中的 config.xml 文件后，重新执行脚本即可根据自定义配置进行安装。
+
 ---
 ## ⚠️ 免责声明
 
