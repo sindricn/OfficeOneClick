@@ -1011,13 +1011,21 @@ $customConfigButton.Add_Click({
     }
     
     try {
+        # 确保临时目录存在
+        if (!(Test-Path $workDir)) {
+            New-Item -Path $workDir -ItemType Directory -Force | Out-Null
+        }
+        
         # 启动自定义配置工具
         $arguments = "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$customConfigPath`""
         Start-Process PowerShell -ArgumentList $arguments -WindowStyle Hidden
+        
         $logBox.SelectionColor = [System.Drawing.Color]::Green
         $logBox.AppendText("自定义配置工具已启动。")
         $logBox.AppendText([Environment]::NewLine)
         $logBox.AppendText("请在配置工具中选择所需选项，然后生成配置文件。")
+        $logBox.AppendText([Environment]::NewLine)
+        $logBox.AppendText("配置文件将保存在: $workDir")
     } catch {
         $logBox.SelectionColor = [System.Drawing.Color]::Red
         $logBox.AppendText("启动自定义配置工具时出错: $_")
