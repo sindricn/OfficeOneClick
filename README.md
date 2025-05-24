@@ -16,26 +16,27 @@ OfficeOneClick 是一个基于 PowerShell 的图形化安装工具，帮助 Wind
 
 - 🧹 安装完成后可自动清理临时文件
 
-## 🚀 功能特色
+🚀 2.0版本升级
 
-- ✅ 一键完成 Office 下载、安装与激活
-
-- ✅ 提供分步骤操作选项
-
-- ✅ 自动下载部署工具与安装包
-
-- ✅ 自动连接 KMS 激活服务器
-
-- ✅ 支持临时文件清理、日志输出等附加功能
+- ✅新增在线自定义配置文件
+  
+- ✅新增离线安装（下载压缩包至本地运行）
 
 
 ## 📚 教程指南
 
+1.0版本：
 - 📖 文章教程：[博客文章]()
 - 🎬 视频教程：
   - B站：[B站视频]()
   - YouTube：[YouTube视频]()
 
+2.0版本：
+- 📖 文章教程：[博客文章]()
+- 🎬 视频教程：
+  - B站：[B站视频]()
+  - YouTube：[YouTube视频]()
+ 
 
 ## ⚡ 快速开始
 
@@ -45,7 +46,7 @@ OfficeOneClick 是一个基于 PowerShell 的图形化安装工具，帮助 Wind
 irm https://raw.githubusercontent.com/sindricn/OfficeOneClick/main/install.ps1 | iex
 ```
 
-## 💡 默认安装说明
+## 💡 默认安装说明（在线&离线默认安装）
 
 - Office 版本：Microsoft Office LTSC 专业增强版 2024
 
@@ -53,7 +54,7 @@ irm https://raw.githubusercontent.com/sindricn/OfficeOneClick/main/install.ps1 |
 
 - 默认组件：Word、Excel、PowerPoint
 
-## ⚙️ 自定义 Office 安装版本与内容
+## ⚙️ 自定义 Office 安装版本与内容（2.0版本已内嵌）
 
 如需更换 Office 版本、安装语言或添加/移除组件（如 Access、Publisher 等），可自行修改 config.xml 配置文件。
 
