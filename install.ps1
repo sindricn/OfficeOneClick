@@ -1013,7 +1013,23 @@ $customConfigButton.Add_Click({
         # 下载 CustomConfig.ps1
         $logBox.AppendText("正在从 GitHub 下载自定义配置工具...")
         $logBox.AppendText([Environment]::NewLine)
-        Invoke-WebRequest -Uri $customConfigUrl -OutFile $customConfigPath
+        $logBox.ScrollToCaret()
+        
+        # 使用 WebClient 下载文件
+        $webClient = New-Object System.Net.WebClient
+        $webClient.DownloadFile($customConfigUrl, $customConfigPath)
+        
+        # 验证文件是否下载成功
+        if (!(Test-Path $customConfigPath)) {
+            throw "下载自定义配置工具失败"
+        }
+        
+        $logBox.SelectionColor = [System.Drawing.Color]::Green
+        $logBox.AppendText("自定义配置工具下载成功。")
+        $logBox.AppendText([Environment]::NewLine)
+        $logBox.AppendText("正在启动配置工具...")
+        $logBox.AppendText([Environment]::NewLine)
+        $logBox.ScrollToCaret()
         
         # 启动自定义配置工具
         $arguments = "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$customConfigPath`""
@@ -1025,10 +1041,14 @@ $customConfigButton.Add_Click({
         $logBox.AppendText("请在配置工具中选择所需选项，然后生成配置文件。")
         $logBox.AppendText([Environment]::NewLine)
         $logBox.AppendText("配置文件将保存在: $workDir")
+        $logBox.ScrollToCaret()
     } catch {
         $logBox.SelectionColor = [System.Drawing.Color]::Red
         $logBox.AppendText("启动自定义配置工具时出错: $_")
         $logBox.AppendText([Environment]::NewLine)
+        $logBox.AppendText("请检查网络连接并重试。")
+        $logBox.AppendText([Environment]::NewLine)
+        $logBox.ScrollToCaret()
     }
 })
 
