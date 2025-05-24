@@ -985,23 +985,37 @@ $completeButton.Add_Click({
 # 离线安装
 $offlineInstallButton.Add_Click({
     # 检查离线安装包是否存在
-    if (Test-Path "$PSScriptRoot\Office2024\setup.exe") {
-        try {
-            # 直接在当前窗口启动配置工具
-            & "$PSScriptRoot\OfflineConfig.ps1"
-        } catch {
-            $logBox.SelectionColor = [System.Drawing.Color]::Red
-            $logBox.AppendText("启动离线安装配置工具时出错: $_")
-            $logBox.AppendText([Environment]::NewLine)
-            $logBox.ScrollToCaret()
-        }
-    } else {
+    $offlinePackagePath = "$PSScriptRoot\Office2024"
+    if (!(Test-Path $offlinePackagePath)) {
         [System.Windows.Forms.MessageBox]::Show(
-            "未找到离线安装包！请确保Office2024文件夹中存在setup.exe。",
+            "未找到离线安装包！请确保Office2024文件夹存在。",
             "错误",
             [System.Windows.Forms.MessageBoxButtons]::OK,
             [System.Windows.Forms.MessageBoxIcon]::Error
         )
+        return
+    }
+
+    # 检查setup.exe
+    $setupPath = "$offlinePackagePath\setup.exe"
+    if (!(Test-Path $setupPath)) {
+        [System.Windows.Forms.MessageBox]::Show(
+            "未找到安装程序！请确保setup.exe位于Office2024文件夹中。",
+            "错误",
+            [System.Windows.Forms.MessageBoxButtons]::OK,
+            [System.Windows.Forms.MessageBoxIcon]::Error
+        )
+        return
+    }
+
+    try {
+        # 直接在当前窗口启动配置工具
+        & "$PSScriptRoot\OfflineConfig.ps1"
+    } catch {
+        $logBox.SelectionColor = [System.Drawing.Color]::Red
+        $logBox.AppendText("启动离线安装配置工具时出错: $_")
+        $logBox.AppendText([Environment]::NewLine)
+        $logBox.ScrollToCaret()
     }
 })
 
