@@ -2,7 +2,8 @@
 
 Microsoft Office 一键安装和激活工具，提供简单易用的图形界面。
 
-![安装界面](screen.png)
+![主界面](main.png)
+![离线安装](loacl.png)
 
 ## ✨ 简介
 
@@ -45,6 +46,14 @@ OfficeOneClick 是一个基于 PowerShell 的图形化安装工具，帮助 Wind
 ```powershell
 irm https://raw.githubusercontent.com/sindricn/OfficeOneClick/main/install.ps1 | iex
 ```
+
+## ⚙️ 离线安装指南
+
+- 下载对应压缩包：OfficeOneClick_Local.zip 
+
+- 解压后，双击运行 start.bat 即可
+
+如果网络不好，可选择博客云盘下载：[传送门](https://pan.nbvil.com)
 
 ## 💡 默认安装说明（在线&离线默认安装）
 
