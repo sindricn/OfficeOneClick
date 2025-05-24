@@ -34,14 +34,12 @@ Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
 # 设置工作目录
+$setupUrl = "https://raw.githubusercontent.com/sindricn/OfficeOneClick/main/setup.exe"
+$configUrl = "https://raw.githubusercontent.com/sindricn/OfficeOneClick/main/config.xml"
 $workDir = Join-Path $env:TEMP "OfficeInstall"
 if (!(Test-Path $workDir)) {
     New-Item -Path $workDir -ItemType Directory -Force | Out-Null
 }
-
-# 定义变量
-$setupUrl = "https://raw.githubusercontent.com/sindricn/OfficeOneClick/main/setup.exe"
-$configUrl = "https://raw.githubusercontent.com/sindricn/OfficeOneClick/main/config.xml"
 $setupPath = Join-Path $workDir "setup.exe"
 $configPath = Join-Path $workDir "config.xml"
 $officePath = ""
