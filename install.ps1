@@ -210,7 +210,7 @@ function InstallOffice {
         
         # 检查 Office 是否已安装
         Start-Sleep -Seconds 5  # 等待安装完成
-        if (Test-Path "C:\Program Files\Microsoft Office\Office16" -or Test-Path "C:\Program Files (x86)\Microsoft Office\Office16") {
+        if ((Test-Path "C:\Program Files\Microsoft Office\Office16") -or (Test-Path "C:\Program Files (x86)\Microsoft Office\Office16")) {
             $installSuccess = $true
         }
         
