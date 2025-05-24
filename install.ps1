@@ -44,31 +44,6 @@ $setupPath = Join-Path $workDir "setup.exe"
 $configPath = Join-Path $workDir "config.xml"
 $officePath = ""
 
-# 检查必要文件
-$requiredFiles = @{
-    "Office2024" = "Office2024 文件夹"
-    "config.xml" = "配置文件"
-}
-
-$missingFiles = @()
-foreach ($file in $requiredFiles.Keys) {
-    $filePath = Join-Path $scriptDir $file
-    if (!(Test-Path $filePath)) {
-        $missingFiles += $requiredFiles[$file]
-    }
-}
-
-if ($missingFiles.Count -gt 0) {
-    $missingFilesList = $missingFiles -join "`n- "
-    [System.Windows.Forms.MessageBox]::Show(
-        "缺少以下必要文件：`n- $missingFilesList`n`n请确保这些文件位于程序同一目录下。`n`n当前程序目录：$scriptDir",
-        "错误",
-        [System.Windows.Forms.MessageBoxButtons]::OK,
-        [System.Windows.Forms.MessageBoxIcon]::Error
-    )
-    exit
-}
-
 # 定义函数
 
 # 下载安装文件
