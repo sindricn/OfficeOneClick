@@ -1000,23 +1000,20 @@ $customConfigButton.Add_Click({
     $logBox.AppendText("正在启动自定义配置工具...")
     $logBox.AppendText([Environment]::NewLine)
     
-    # 检查自定义配置工具是否存在
-    $customConfigPath = Join-Path $scriptDir "CustomConfig.ps1"
-    if (!(Test-Path $customConfigPath)) {
-        $logBox.SelectionColor = [System.Drawing.Color]::Red
-        $logBox.AppendText("错误: 未找到自定义配置工具。")
-        $logBox.AppendText([Environment]::NewLine)
-        $logBox.AppendText("请确保 'CustomConfig.ps1' 文件位于与此工具相同的目录中。")
-        $logBox.AppendText([Environment]::NewLine)
-        $logBox.AppendText("当前查找路径: $customConfigPath")
-        return
-    }
+    # 从 GitHub 下载 CustomConfig.ps1
+    $customConfigUrl = "https://raw.githubusercontent.com/sindricn/OfficeOneClick/main/CustomConfig.ps1"
+    $customConfigPath = Join-Path $workDir "CustomConfig.ps1"
     
     try {
         # 确保临时目录存在
         if (!(Test-Path $workDir)) {
             New-Item -Path $workDir -ItemType Directory -Force | Out-Null
         }
+        
+        # 下载 CustomConfig.ps1
+        $logBox.AppendText("正在从 GitHub 下载自定义配置工具...")
+        $logBox.AppendText([Environment]::NewLine)
+        Invoke-WebRequest -Uri $customConfigUrl -OutFile $customConfigPath
         
         # 启动自定义配置工具
         $arguments = "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$customConfigPath`""
